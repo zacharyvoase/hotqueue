@@ -1,0 +1,5 @@
+*.pyc
+docs/.build
+docs/_build
+build/
+dist/
