@@ -31,7 +31,7 @@ setup(
     author           = 'Richard Henry',
     author_email     = 'richardhenry@me.com',
     url              = 'http://github.com/richardhenry/hotqueue',
-    description      = 'HotQueue is a Python library that allows you to use `Redis as a message queue within your Python programs.',
+    description      = 'HotQueue is a Python library that allows you to use Redis as a message queue within your Python programs.',
     long_description = get_long_description(),
     packages         = ['hotqueue'],
     classifiers = [
