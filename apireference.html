@@ -1,0 +1,198 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API Reference &mdash; HotQueue v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/warm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="HotQueue v0.1 documentation" href="index.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="HotQueue User Documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="HotQueue User Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">HotQueue v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="hotqueue">
+<h2>HotQueue<a class="headerlink" href="#hotqueue" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="hotqueue.HotQueue">
+<em class="property">class </em><tt class="descclassname">hotqueue.</tt><tt class="descname">HotQueue</tt><big>(</big><em>name</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple FIFO message queue stored in a Redis list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; name of the queue</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs to pass to <tt class="xref py py-class docutils literal"><span class="pre">Redis</span></tt>, most commonly
+<tt class="xref py py-attr docutils literal"><span class="pre">host</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">port</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">db</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="hotqueue.HotQueue.key">
+<tt class="descname">key</tt><a class="headerlink" href="#hotqueue.HotQueue.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the key name used to store this queue in Redis, determined
+from <tt class="xref py py-attr docutils literal"><span class="pre">name</span></tt>. Usually like <tt class="docutils literal"><span class="pre">hotqueue:name</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hotqueue.HotQueue.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the queue of all messages, deleting the Redis key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hotqueue.HotQueue.consume">
+<tt class="descname">consume</tt><big>(</big><em>block=True</em>, <em>timeout=None</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.consume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a generator that yields whenever a message is waiting in the
+queue. Will block otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>block</strong> &#8211; whether or not to wait until a message is available in
+the queue before yielding; <tt class="xref docutils literal"><span class="pre">True</span></tt> by default</li>
+<li><strong>timeout</strong> &#8211; when using <tt class="xref py py-attr docutils literal"><span class="pre">block</span></tt>, if no message is available
+for <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span></tt> in seconds, return <tt class="xref docutils literal"><span class="pre">None</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hotqueue.HotQueue.dequeue">
+<tt class="descname">dequeue</tt><big>(</big><em>block=False</em>, <em>timeout=None</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.dequeue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a message from the queue.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>block</strong> &#8211; whether or not to wait until a message is available in
+the queue before returning; <tt class="xref docutils literal"><span class="pre">False</span></tt> by default</li>
+<li><strong>timeout</strong> &#8211; when using <tt class="xref py py-attr docutils literal"><span class="pre">block</span></tt>, if no message is available
+for <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span></tt> in seconds, return <tt class="xref docutils literal"><span class="pre">None</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hotqueue.HotQueue.enqueue">
+<tt class="descname">enqueue</tt><big>(</big><em>*messages</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.enqueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Push one or more messages onto the queue.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API Reference</a><ul>
+<li><a class="reference internal" href="#hotqueue">HotQueue</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">HotQueue User Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="changelog.html"
+                        title="next chapter">Changelog</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/apireference.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="HotQueue User Documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">HotQueue v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Richard Henry.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.3.
+    </div>
+  </body>
+</html>

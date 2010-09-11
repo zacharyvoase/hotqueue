@@ -1,0 +1,189 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>HotQueue User Documentation &mdash; HotQueue v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/warm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="HotQueue v0.1 documentation" href="#" />
+    <link rel="next" title="API Reference" href="apireference.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="apireference.html" title="API Reference"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">HotQueue v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hotqueue-user-documentation">
+<h1>HotQueue User Documentation<a class="headerlink" href="#hotqueue-user-documentation" title="Permalink to this headline">¶</a></h1>
+<p>HotQueue is a Python library that allows you to use <a class="reference external" href="http://code.google.com/p/redis/">Redis</a> as a message queue within your Python programs. To install it, run:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> easy_install -U hotqueue
+</pre></div>
+</div>
+<p>The source code is available on <a class="reference external" href="http://github.com/richardhenry/hotqueue">GitHub</a>.</p>
+<p>To get help with HotQueue, use the <a class="reference external" href="http://groups.google.com/group/hotqueue-users">HotQueue Users mailing list</a>.</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>A HotQueue is a simple FIFO queue that maps to a list key in Redis. Creating a queue is as simple as creating a <a class="reference internal" href="apireference.html#hotqueue.HotQueue" title="hotqueue.HotQueue"><tt class="xref py py-class docutils literal"><span class="pre">HotQueue</span></tt></a> instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hotqueue</span> <span class="kn">import</span> <span class="n">HotQueue</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span> <span class="o">=</span> <span class="n">HotQueue</span><span class="p">(</span><span class="s">&#39;myqueue&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can then push messages onto this queue using the <a class="reference internal" href="apireference.html#hotqueue.HotQueue.enqueue" title="hotqueue.HotQueue.enqueue"><tt class="xref py py-meth docutils literal"><span class="pre">enqueue()</span></tt></a> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="s">&#39;my message&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="s">&#39;another message&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To pull messages off the queue, use <a class="reference internal" href="apireference.html#hotqueue.HotQueue.dequeue" title="hotqueue.HotQueue.dequeue"><tt class="xref py py-meth docutils literal"><span class="pre">dequeue()</span></tt></a>. If the queue is empty, the <a class="reference internal" href="apireference.html#hotqueue.HotQueue.dequeue" title="hotqueue.HotQueue.dequeue"><tt class="xref py py-meth docutils literal"><span class="pre">dequeue()</span></tt></a> method will return <tt class="xref docutils literal"><span class="pre">None</span></tt>. Here&#8217;s how:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span>
+<span class="go">&#39;my message&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span>
+<span class="go">&#39;another message&#39;</span>
+</pre></div>
+</div>
+<p>Messages don&#8217;t have to be strings, you can enqueue any Python object. HotQueue will handle object serialization and deserialization for you using <a class="reference external" href="http://docs.python.org/library/pickle.html">pickle</a>. This can be useful, as it allows you to share Python objects between programs. Here&#8217;s an example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">enqueue</span><span class="p">({</span><span class="s">&#39;cat&#39;</span><span class="p">:</span> <span class="s">&#39;meow&#39;</span><span class="p">,</span> <span class="s">&#39;dog&#39;</span><span class="p">:</span> <span class="s">&#39;woof&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sounds</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sounds</span><span class="p">[</span><span class="s">&#39;cat&#39;</span><span class="p">]</span>
+<span class="go">&#39;meow&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sounds</span><span class="p">[</span><span class="s">&#39;dog&#39;</span><span class="p">]</span>
+<span class="go">&#39;woof&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">weather</span> <span class="o">=</span> <span class="s">&#39;rainy&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">MyClass</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_class</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">my_class</span><span class="o">.</span><span class="n">weather</span>
+<span class="go">rainy</span>
+</pre></div>
+</div>
+<p>In most cases, you will want to use the <a class="reference internal" href="apireference.html#hotqueue.HotQueue.consume" title="hotqueue.HotQueue.consume"><tt class="xref py py-meth docutils literal"><span class="pre">consume()</span></tt></a> method when writing a queue worker. This method will return a generator that yields whenever an item is available on the queue, and will block otherwise. Use this method like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="s">&#39;blue&#39;</span><span class="p">,</span> <span class="s">&#39;green&#39;</span><span class="p">,</span> <span class="s">&#39;red&#39;</span><span class="p">,</span> <span class="s">&#39;white&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">queue</span><span class="o">.</span><span class="n">consume</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">item</span>
+<span class="go">blue</span>
+<span class="go">green</span>
+<span class="go">red</span>
+<span class="go">white</span>
+</pre></div>
+</div>
+<p>If you want the worker to &#8220;give up&#8221; if nothing is in the queue for a certain amount of time, you can provide a <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span></tt> value in seconds:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">queue</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It is perfectly safe to have many workers consuming from the same queue. This method makes use of the <tt class="docutils literal"><span class="pre">BLPOP</span></tt> command available in Redis, and <a class="reference external" href="http://code.google.com/p/redis/wiki/BlpopCommand">documented here</a>.</p>
+</div>
+<div class="section" id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="apireference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="apireference.html#hotqueue">HotQueue</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-v0-1">Changes in v0.1</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>HotQueue requires, at a minimum:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://code.google.com/p/redis/">Redis</a> version 1.3.1+</li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/redis/2.0.0">redis-py</a> version 2.0.0+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">HotQueue User Documentation</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#further-reading">Further Reading</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="apireference.html"
+                        title="next chapter">API Reference</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="apireference.html" title="API Reference"
+             >next</a> |</li>
+        <li><a href="#">HotQueue v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Richard Henry.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.3.
+    </div>
+  </body>
+</html>
