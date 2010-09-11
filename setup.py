@@ -16,24 +16,30 @@ def read_from(filename):
     finally:
         fp.close()
 
+def get_long_description():
+    return read_from(rel_file('README.rst'))
+
+def get_requirements():
+    data = read_from(rel_file('REQUIREMENTS'))
+    lines = map(lambda s: s.strip(), data.splitlines())
+    return filter(None, lines)
+
 def get_version():
     data = read_from(rel_file('hotqueue', '__init__.py'))
     return re.search(r"__version__ = '([^']+)'", data).group(1)
 
-def get_long_description():
-    return read_from(rel_file('README.rst'))
 
-
-setup(
+setup(    
     name             = 'hotqueue',
-    license          = 'MIT',
-    version          = get_version(),
     author           = 'Richard Henry',
     author_email     = 'richardhenry@me.com',
-    url              = 'http://github.com/richardhenry/hotqueue',
     description      = 'HotQueue is a Python library that allows you to use Redis as a message queue within your Python programs.',
+    license          = 'MIT',
     long_description = get_long_description(),
+    install_requires = get_requirements(),
     packages         = ['hotqueue'],
+    url              = 'http://github.com/richardhenry/hotqueue',
+    version          = get_version(),
     classifiers = [
         'Programming Language :: Python',
         'Development Status :: 4 - Beta',
