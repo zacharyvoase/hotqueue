@@ -1,6 +1,6 @@
-===========
-MongoEngine
-===========
+========
+HotQueue
+========
 :Info: HotQueue is a Python library that allows you to use Redis as a message queue within your Python programs.
 :Author: Richard Henry (http://github.com/richardhenry)
 
