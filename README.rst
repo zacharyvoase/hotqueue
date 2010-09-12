@@ -11,9 +11,9 @@ HotQueue is a Python library that allows you to use `Redis <http://code.google.c
 
 The main advantage of this model is that there is no queue server to run, other than Redis. This is particularly ideal if you're already using Redis as a datastore elsewhere. To install it, run:
 
-.. code-block:: console
+    easy_install -U hotqueue
 
-    # easy_install -U hotqueue
+You best place to get started is `the documentation <http://richardhenry.github.com/hotqueue/>`_.
 
 The source code is available on `GitHub <http://github.com/richardhenry/hotqueue>`_.
 
@@ -22,4 +22,4 @@ To get help with HotQueue, use the `HotQueue Users mailing list
 
 Contributing
 ============
-The source is available on `GitHub <http://github.com/richardhenry/hotqueue>`_ - to contribute to the project, fork it on GitHub and send a pull request, all contributions and suggestions are welcome!
+The source is available on `GitHub <http://github.com/richardhenry/hotqueue>`_. To contribute to the project, fork it on GitHub and send a pull request, all contributions and suggestions are welcome.
