@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""HotQueue is a Python library that allows you to use Redis as a message queue
+within your Python programs.
+"""
+
 import cPickle
 
 from redis import Redis
@@ -118,9 +122,9 @@ class HotQueue(object):
         :param timeout: when using :attr:`block`, if no message is available
             for :attr:`timeout` in seconds, return ``None``
         """
-        if timeout is None:
-            timeout = 0
         if block:
+            if timeout is None:
+                timeout = 0
             message = self.__redis.blpop(self.key, timeout=timeout)
             if message is not None:
                 message = message[1]

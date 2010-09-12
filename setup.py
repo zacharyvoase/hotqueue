@@ -25,7 +25,7 @@ def get_requirements():
     return filter(None, lines)
 
 def get_version():
-    data = read_from(rel_file('hotqueue', '__init__.py'))
+    data = read_from(rel_file('hotqueue.py'))
     return re.search(r"__version__ = '([^']+)'", data).group(1)
 
 
@@ -37,7 +37,7 @@ setup(
     license          = 'MIT',
     long_description = get_long_description(),
     install_requires = get_requirements(),
-    packages         = ['hotqueue'],
+    py_modules       = ['hotqueue'],
     url              = 'http://github.com/richardhenry/hotqueue',
     version          = get_version(),
     classifiers = [
