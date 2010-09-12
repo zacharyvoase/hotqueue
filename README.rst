@@ -13,7 +13,7 @@ The main advantage of this model is that there is no queue server to run, other 
 
     easy_install -U hotqueue
 
-You best place to get started is `the documentation <http://richardhenry.github.com/hotqueue/>`_.
+The best place to get started is `the documentation <http://richardhenry.github.com/hotqueue/>`_.
 
 The source code is available on `GitHub <http://github.com/richardhenry/hotqueue>`_.
 
