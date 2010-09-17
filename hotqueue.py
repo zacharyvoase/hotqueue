@@ -4,6 +4,7 @@
 within your Python programs.
 """
 
+from functools import wraps
 import cPickle
 
 from redis import Redis
@@ -11,7 +12,7 @@ from redis import Redis
 
 __all__ = ['HotQueue']
 
-__version__ = '0.1'
+__version__ = '0.2.0'
 
 
 class HotQueue(object):
@@ -24,57 +25,6 @@ class HotQueue(object):
     """
     
     def __init__(self, name, **kwargs):
-        """
-        >>> queue = HotQueue('doctestq', host='localhost', port=6379, db=0)
-        >>> queue.clear()
-        >>> queue.enqueue('my message')
-        >>> len(queue)
-        1
-        >>> queue.enqueue('another message')
-        >>> len(queue)
-        2
-        >>> queue.dequeue()
-        'my message'
-        >>> queue.dequeue()
-        'another message'
-        >>> queue.clear()
-        >>> queue.enqueue('dog')
-        >>> len(queue)
-        1
-        >>> queue.enqueue('rabbit', 'mouse')
-        >>> len(queue)
-        3
-        >>> for item in queue.consume(timeout=1):
-        ...     print item
-        dog
-        rabbit
-        mouse
-        >>> queue.enqueue('Richard', 'Michael', 'Henry')
-        >>> len(queue)
-        3
-        >>> queue.dequeue(block=True)
-        'Richard'
-        >>> len(queue)
-        2
-        >>> queue.dequeue(block=True, timeout=1)
-        'Michael'
-        >>> len(queue)
-        1
-        >>> for item in queue.consume(block=False):
-        ...     print item
-        Henry
-        >>> len(queue)
-        0
-        >>> queue.enqueue({'cat': 'meow', 'dog': 'woof', 'cow': 'moo'})
-        >>> sounds = queue.dequeue()
-        >>> sounds['cat'] == 'meow'
-        True
-        >>> sounds['dog'] == 'woof'
-        True
-        >>> sounds['cow'] == 'moo'
-        True
-        >>> queue.clear()
-        """
         self.name = name
         self.__redis = Redis(**kwargs)
     
@@ -107,36 +57,53 @@ class HotQueue(object):
         """
         try:
             while True:
-                message = self.dequeue(block=block, timeout=timeout)
-                if message is None:
+                msg = self.get(block=block, timeout=timeout)
+                if msg is None:
                     break
-                yield message
+                yield msg
         except KeyboardInterrupt:
             print; return
     
-    def dequeue(self, block=False, timeout=None):
+    def get(self, block=False, timeout=None):
         """Return a message from the queue.
         
-        :param block: whether or not to wait until a message is available in
+        :param block: whether or not to wait until a msg is available in
             the queue before returning; ``False`` by default
-        :param timeout: when using :attr:`block`, if no message is available
+        :param timeout: when using :attr:`block`, if no msg is available
             for :attr:`timeout` in seconds, return ``None``
         """
         if block:
             if timeout is None:
                 timeout = 0
-            message = self.__redis.blpop(self.key, timeout=timeout)
-            if message is not None:
-                message = message[1]
+            msg = self.__redis.blpop(self.key, timeout=timeout)
+            if msg is not None:
+                msg = msg[1]
         else:
-            message = self.__redis.lpop(self.key)
-        if message is not None:
-            message = cPickle.loads(message)
-        return message
+            msg = self.__redis.lpop(self.key)
+        if msg is not None:
+            msg = cPickle.loads(msg)
+        return msg
     
-    def enqueue(self, *messages):
-        """Push one or more messages onto the queue."""
-        for message in messages:
-            message = cPickle.dumps(message)
-            self.__redis.rpush(self.key, message)
+    def put(self, *msgs):
+        """Push one or more messages onto the queue.
+        
+        :param msgs: one or more messages to push onto the queue
+        """
+        for msg in msgs:
+            msg = cPickle.dumps(msg)
+            self.__redis.rpush(self.key, msg)
+    
+    def worker(self, **kwargs):
+        """Decorator for using a function as a queue worker.
+        
+        :param kwargs: any arguments that :meth:`~hotqueue.HotQueue.consume`
+            can accept (such as :attr:`timeout`)
+        """
+        def decorator(worker):
+            @wraps(worker)
+            def wrapper():
+                for msg in self.consume(**kwargs):
+                    worker(msg)
+            return wrapper
+        return decorator
 
