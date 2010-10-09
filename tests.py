@@ -2,7 +2,7 @@
 
 """Test suite for the HotQueue library. To run this test suite, execute this
 Python program (``python tests.py``). Redis must be running on localhost:6379,
-and a list key named 'testqueue' will be created and deleted in database 0
+and a list key named 'hotqueue:testqueue' will be created and deleted in db 0
 several times while the tests are running.
 """
 

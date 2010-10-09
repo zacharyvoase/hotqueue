@@ -13,6 +13,8 @@ HotQueue
 
     .. automethod:: hotqueue.HotQueue.consume
 
-    .. automethod:: hotqueue.HotQueue.dequeue
+    .. automethod:: hotqueue.HotQueue.get
 
-    .. automethod:: hotqueue.HotQueue.enqueue
+    .. automethod:: hotqueue.HotQueue.put
+    
+    .. automethod:: hotqueue.HotQueue.worker

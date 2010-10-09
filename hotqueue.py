@@ -17,7 +17,10 @@ __version__ = '0.2.0'
 
 class HotQueue(object):
     
-    """Simple FIFO message queue stored in a Redis list.
+    """Simple FIFO message queue stored in a Redis list. Example:
+
+    >>> from hotqueue import HotQueue
+    >>> queue = HotQueue('myqueue', host='localhost', port=6379, db=0)
     
     :param name: name of the queue
     :param kwargs: additional kwargs to pass to :class:`Redis`, most commonly
@@ -37,8 +40,8 @@ class HotQueue(object):
     
     @property
     def key(self):
-        """Return the key name used to store this queue in Redis, determined
-        from :attr:`name`. Usually like ``hotqueue:name``.
+        """Return the key name used to store this queue in Redis, which is
+        a concatenation of "hotqueue:" and :attr:`name`.
         """
         return 'hotqueue:%s' % self.name
     
@@ -46,18 +49,22 @@ class HotQueue(object):
         """Clear the queue of all messages, deleting the Redis key."""
         self.__redis.delete(self.key)
     
-    def consume(self, block=True, timeout=None):
+    def consume(self, **kwargs):
         """Return a generator that yields whenever a message is waiting in the
-        queue. Will block otherwise.
+        queue. Will block otherwise. Example:
+
+        >>> for msg in queue.consume(timeout=1):
+        ...     print msg
+        my message
+        another message
         
-        :param block: whether or not to wait until a message is available in
-            the queue before yielding; ``True`` by default
-        :param timeout: when using :attr:`block`, if no message is available
-            for :attr:`timeout` in seconds, return ``None``
+        :param kwargs: any arguments that :meth:`~hotqueue.HotQueue.get` can
+            accept (:attr:`block` will default to ``True`` if not given)
         """
+        kwargs.setdefault('block', True)
         try:
             while True:
-                msg = self.get(block=block, timeout=timeout)
+                msg = self.get(**kwargs)
                 if msg is None:
                     break
                 yield msg
@@ -65,12 +72,17 @@ class HotQueue(object):
             print; return
     
     def get(self, block=False, timeout=None):
-        """Return a message from the queue.
+        """Return a message from the queue. Example:
+    
+        >>> queue.get()
+        'my message'
+        >>> queue.get()
+        'another message'
         
         :param block: whether or not to wait until a msg is available in
             the queue before returning; ``False`` by default
         :param timeout: when using :attr:`block`, if no msg is available
-            for :attr:`timeout` in seconds, return ``None``
+            for :attr:`timeout` in seconds, give up and return ``None``
         """
         if block:
             if timeout is None:
@@ -85,19 +97,27 @@ class HotQueue(object):
         return msg
     
     def put(self, *msgs):
-        """Push one or more messages onto the queue.
-        
-        :param msgs: one or more messages to push onto the queue
+        """Put one or more messages onto the queue. Example:
+    
+        >>> queue.put('my message')
+        >>> queue.put('another message')
         """
         for msg in msgs:
             msg = cPickle.dumps(msg)
             self.__redis.rpush(self.key, msg)
     
     def worker(self, **kwargs):
-        """Decorator for using a function as a queue worker.
+        """Decorator for using a function as a queue worker. Example:
+    
+        >>> @queue.worker(timeout=1)
+        ... def printer(msg):
+        ...     print msg
+        >>> printer()
+        my message
+        another message
         
-        :param kwargs: any arguments that :meth:`~hotqueue.HotQueue.consume`
-            can accept (such as :attr:`timeout`)
+        :param kwargs: any arguments that :meth:`~hotqueue.HotQueue.get` can
+            accept (:attr:`block` will default to ``True`` if not given)
         """
         def decorator(worker):
             @wraps(worker)
