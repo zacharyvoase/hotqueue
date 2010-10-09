@@ -14,7 +14,7 @@ Creating a queue is as simple as creating a :class:`~hotqueue.HotQueue` instance
 
 The queue will be stored a Redis list key named ``hotqueue:myqueue``, on the Redis server running at ``localhost:6379``, in database ``0``. The :attr:`host`, :attr:`port` and :attr:`db` arguments are optional.
 
-Putting Items onto the Queue
+Putting Items Onto the Queue
 ============================
 
 Then you may have one (or many) Python programs pushing to the queue using :meth:`hotqueue.HotQueue.put`:
@@ -31,7 +31,7 @@ You can safely push **any Python object** that can be `pickled <http://docs.pyth
     >>> from decimal import Decimal
     >>> queue.put(Decimal('1.4'))
 
-Getting Items off the Queue
+Getting Items Off the Queue
 ===========================
 
 You can then pull items off the queue using :meth:`hotqueue.HotQueue.get`. You would usually do this in another Python program, but you can do it wherever you like.

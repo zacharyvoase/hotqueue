@@ -60,7 +60,7 @@
 <p>The queue will be stored a Redis list key named <tt class="docutils literal"><span class="pre">hotqueue:myqueue</span></tt>, on the Redis server running at <tt class="docutils literal"><span class="pre">localhost:6379</span></tt>, in database <tt class="docutils literal"><span class="pre">0</span></tt>. The <tt class="xref py py-attr docutils literal"><span class="pre">host</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">port</span></tt> and <tt class="xref py py-attr docutils literal"><span class="pre">db</span></tt> arguments are optional.</p>
 </div>
 <div class="section" id="putting-items-onto-the-queue">
-<h2>Putting Items onto the Queue<a class="headerlink" href="#putting-items-onto-the-queue" title="Permalink to this headline">¶</a></h2>
+<h2>Putting Items Onto the Queue<a class="headerlink" href="#putting-items-onto-the-queue" title="Permalink to this headline">¶</a></h2>
 <p>Then you may have one (or many) Python programs pushing to the queue using <a class="reference internal" href="apireference.html#hotqueue.HotQueue.put" title="hotqueue.HotQueue.put"><tt class="xref py py-meth docutils literal"><span class="pre">hotqueue.HotQueue.put()</span></tt></a>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -77,7 +77,7 @@
 </div>
 </div>
 <div class="section" id="getting-items-off-the-queue">
-<h2>Getting Items off the Queue<a class="headerlink" href="#getting-items-off-the-queue" title="Permalink to this headline">¶</a></h2>
+<h2>Getting Items Off the Queue<a class="headerlink" href="#getting-items-off-the-queue" title="Permalink to this headline">¶</a></h2>
 <p>You can then pull items off the queue using <a class="reference internal" href="apireference.html#hotqueue.HotQueue.get" title="hotqueue.HotQueue.get"><tt class="xref py py-meth docutils literal"><span class="pre">hotqueue.HotQueue.get()</span></tt></a>. You would usually do this in another Python program, but you can do it wherever you like.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 <span class="go">4</span>
@@ -141,8 +141,8 @@
   <ul>
 <li><a class="reference internal" href="#">Tutorial</a><ul>
 <li><a class="reference internal" href="#connecting-to-redis">Connecting to Redis</a></li>
-<li><a class="reference internal" href="#putting-items-onto-the-queue">Putting Items onto the Queue</a></li>
-<li><a class="reference internal" href="#getting-items-off-the-queue">Getting Items off the Queue</a></li>
+<li><a class="reference internal" href="#putting-items-onto-the-queue">Putting Items Onto the Queue</a></li>
+<li><a class="reference internal" href="#getting-items-off-the-queue">Getting Items Off the Queue</a></li>
 <li><a class="reference internal" href="#consuming-the-queue">Consuming the Queue</a></li>
 <li><a class="reference internal" href="#writing-a-queue-worker">Writing a Queue Worker</a></li>
 </ul>
