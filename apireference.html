@@ -6,13 +6,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API Reference &mdash; HotQueue v0.1 documentation</title>
+    <title>API Reference &mdash; HotQueue v0.2.0 documentation</title>
     <link rel="stylesheet" href="static/warm.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1',
+        VERSION:     '0.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -21,9 +21,9 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="HotQueue v0.1 documentation" href="index.html" />
+    <link rel="top" title="HotQueue v0.2.0 documentation" href="index.html" />
     <link rel="next" title="Changelog" href="changelog.html" />
-    <link rel="prev" title="HotQueue User Documentation" href="index.html" /> 
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,9 +36,9 @@
           <a href="changelog.html" title="Changelog"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="HotQueue User Documentation"
+          <a href="tutorial.html" title="Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">HotQueue v0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">HotQueue v0.2.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -54,7 +54,11 @@
 <dl class="class">
 <dt id="hotqueue.HotQueue">
 <em class="property">class </em><tt class="descclassname">hotqueue.</tt><tt class="descname">HotQueue</tt><big>(</big><em>name</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple FIFO message queue stored in a Redis list.</p>
+<dd><p>Simple FIFO message queue stored in a Redis list. Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hotqueue</span> <span class="kn">import</span> <span class="n">HotQueue</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span> <span class="o">=</span> <span class="n">HotQueue</span><span class="p">(</span><span class="s">&#39;myqueue&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -71,8 +75,8 @@
 <dl class="attribute">
 <dt id="hotqueue.HotQueue.key">
 <tt class="descname">key</tt><a class="headerlink" href="#hotqueue.HotQueue.key" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the key name used to store this queue in Redis, determined
-from <tt class="xref py py-attr docutils literal"><span class="pre">name</span></tt>. Usually like <tt class="docutils literal"><span class="pre">hotqueue:name</span></tt>.</p>
+<dd><p>Return the key name used to store this queue in Redis, which is
+a concatenation of &#8220;hotqueue:&#8221; and <tt class="xref py py-attr docutils literal"><span class="pre">name</span></tt>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -83,18 +87,22 @@ from <tt class="xref py py-attr docutils literal"><span class="pre">name</span><
 
 <dl class="method">
 <dt id="hotqueue.HotQueue.consume">
-<tt class="descname">consume</tt><big>(</big><em>block=True</em>, <em>timeout=None</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.consume" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">consume</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.consume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a generator that yields whenever a message is waiting in the
-queue. Will block otherwise.</p>
+queue. Will block otherwise. Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">queue</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">msg</span>
+<span class="go">my message</span>
+<span class="go">another message</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>block</strong> &#8211; whether or not to wait until a message is available in
-the queue before yielding; <tt class="xref docutils literal"><span class="pre">True</span></tt> by default</li>
-<li><strong>timeout</strong> &#8211; when using <tt class="xref py py-attr docutils literal"><span class="pre">block</span></tt>, if no message is available
-for <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span></tt> in seconds, return <tt class="xref docutils literal"><span class="pre">None</span></tt></li>
+<li><strong>kwargs</strong> &#8211; any arguments that <a class="reference internal" href="#hotqueue.HotQueue.get" title="hotqueue.HotQueue.get"><tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt></a> can
+accept (<tt class="xref py py-attr docutils literal"><span class="pre">block</span></tt> will default to <tt class="xref docutils literal"><span class="pre">True</span></tt> if not given)</li>
 </ul>
 </td>
 </tr>
@@ -103,18 +111,24 @@ for <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span
 </dd></dl>
 
 <dl class="method">
-<dt id="hotqueue.HotQueue.dequeue">
-<tt class="descname">dequeue</tt><big>(</big><em>block=False</em>, <em>timeout=None</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.dequeue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a message from the queue.</p>
+<dt id="hotqueue.HotQueue.get">
+<tt class="descname">get</tt><big>(</big><em>block=False</em>, <em>timeout=None</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a message from the queue. Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">&#39;my message&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">&#39;another message&#39;</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>block</strong> &#8211; whether or not to wait until a message is available in
+<li><strong>block</strong> &#8211; whether or not to wait until a msg is available in
 the queue before returning; <tt class="xref docutils literal"><span class="pre">False</span></tt> by default</li>
-<li><strong>timeout</strong> &#8211; when using <tt class="xref py py-attr docutils literal"><span class="pre">block</span></tt>, if no message is available
-for <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span></tt> in seconds, return <tt class="xref docutils literal"><span class="pre">None</span></tt></li>
+<li><strong>timeout</strong> &#8211; when using <tt class="xref py py-attr docutils literal"><span class="pre">block</span></tt>, if no msg is available
+for <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span></tt> in seconds, give up and return <tt class="xref docutils literal"><span class="pre">None</span></tt></li>
 </ul>
 </td>
 </tr>
@@ -123,9 +137,39 @@ for <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span
 </dd></dl>
 
 <dl class="method">
-<dt id="hotqueue.HotQueue.enqueue">
-<tt class="descname">enqueue</tt><big>(</big><em>*messages</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.enqueue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Push one or more messages onto the queue.</p>
+<dt id="hotqueue.HotQueue.put">
+<tt class="descname">put</tt><big>(</big><em>*msgs</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put one or more messages onto the queue. Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s">&#39;my message&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s">&#39;another message&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="hotqueue.HotQueue.worker">
+<tt class="descname">worker</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#hotqueue.HotQueue.worker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for using a function as a queue worker. Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nd">@queue.worker</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">msg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printer</span><span class="p">()</span>
+<span class="go">my message</span>
+<span class="go">another message</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>kwargs</strong> &#8211; any arguments that <a class="reference internal" href="#hotqueue.HotQueue.get" title="hotqueue.HotQueue.get"><tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt></a> can
+accept (<tt class="xref py py-attr docutils literal"><span class="pre">block</span></tt> will default to <tt class="xref docutils literal"><span class="pre">True</span></tt> if not given)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -148,8 +192,8 @@ for <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">HotQueue User Documentation</a></p>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter">Tutorial</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="changelog.html"
                         title="next chapter">Changelog</a></p>
@@ -185,9 +229,9 @@ for <tt class="xref py py-attr docutils literal"><span class="pre">timeout</span
           <a href="changelog.html" title="Changelog"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="HotQueue User Documentation"
+          <a href="tutorial.html" title="Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">HotQueue v0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">HotQueue v0.2.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
