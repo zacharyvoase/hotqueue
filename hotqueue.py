@@ -106,10 +106,19 @@ class HotQueue(object):
             msg = cPickle.dumps(msg)
             self.__redis.rpush(self.key, msg)
     
-    def worker(self, **kwargs):
+    def worker(self, *args, **kwargs):
         """Decorator for using a function as a queue worker. Example:
     
         >>> @queue.worker(timeout=1)
+        ... def printer(msg):
+        ...     print msg
+        >>> printer()
+        my message
+        another message
+        
+        You can also use it without passing any keyword arguments:
+        
+        >>> @queue.worker
         ... def printer(msg):
         ...     print msg
         >>> printer()
@@ -125,5 +134,7 @@ class HotQueue(object):
                 for msg in self.consume(**kwargs):
                     worker(msg)
             return wrapper
+        if args:
+            return decorator(*args)
         return decorator
 
